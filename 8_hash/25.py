@@ -7,50 +7,86 @@ https://school.programmers.co.kr/learn/courses/30/lessons/72411
 
 
 from itertools import combinations
-from collections import defaultdict
-# s = "ABCFG"
-def make_cobinations(input:str)->list:
+from collections import defaultdict, Counter
+from pprint import pprint
+
+def make_cobinations(input:str,course:list)->list:
     result = set()
 
-    for r in range(2, len(input)+1):
+    for r in course:
         for comb in combinations(input, r):
             sorted_str = ''.join(sorted(comb))
             result.add(sorted_str)
+    # print(len(result))
+    return result
 
-    # 결과를 정렬해서 출력
-    # for item in sorted(result):
-    #     print(item)
+def retry_make_conbinations(input,r)->list:
+    result = set()
+    for comb in combinations(input, r):
+        sorted_str = ''.join(sorted(comb))
+        result.add(sorted_str)
     return result
 
 menu_count =  defaultdict(int)
+courses= [defaultdict(int) for _ in range(10)]
+
 
 def solution(orders, course):
     answer = []
     # print(make_cobinations(orders[0]))
     
     for order in orders:
-        order_combinations = make_cobinations(order)
+        #old
+        # order_combinations = make_cobinations(order,course)
         # print(f"order:{order} \n{order_combinations}")
+        # for combination in order_combinations:
+        #     # print(combination)
+        #     length = len(combination)
+        #     menu_dict = courses[length]
+        #     menu_dict[combination]=menu_dict[combination]+1
+        for r in course:
+            order_combinations = retry_make_conbinations(order,r)
+            for combination in order_combinations:
+                menu_dict = courses[r]
+                menu_dict[combination]=menu_dict[combination]+1
+            
+    
+    # pprint(courses)
+    # print()
+    
+    
+    
+    for cnt in course:
+        # print(courses[cnt])
+        # print()
         
-        for combination in order_combinations:
-            # print(combination)
-            menu_count[combination]=menu_count[combination]+1
+        course = courses[cnt]
+        # pprint(course)
+        if len(course)>=1:
+            max_value = max(course.values())
+
+        if max_value<2:
+            continue
+        result = [k for k, v in course.items() if v == max_value]
+        # print(result)
+        for _ in result:
+            answer.append(_)
     
-    print(menu_count)
     
-    set_menu_dict = defaultdict(list)
-    for number in course:
-        set_menu_dict[number]=[]
-    
-    for menu in menu_count:
-        # print(f"menu:{menu} : {menu_count[menu]}")
-        cnt = menu_count[menu]
-        if set_menu_dict.get(cnt) is not None:
-            set_menu_dict[cnt].append(menu)
-    print(set_menu_dict)
-    return answer
+    return sorted(answer)
 
 
-print(solution(["ABCFG", "AC", "CDE", "ACDE", "BCFG", "ACDEH"],	[2,3,4]	))
+# print(solution(["ABCFG", "AC", "CDE", "ACDE", "BCFG", "ACDEH"],	[2,3,4]	))
 # print(solution(["ABCDE", "AB", "CD", "ADE", "XYZ", "XYZ", "ACD"],[2,3,5]))
 # print(solution(["XYZ", "XWY", "WXA"]	,[2,3,4]))
+
+
+""" 
+1. make_cobinations
+부분을 2부터 len(input)  까지 만들지 않고 
+course 길이까지만 만들도록 변경
+
+
+
+
+"""
